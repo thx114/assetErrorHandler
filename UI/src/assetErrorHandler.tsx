@@ -5,6 +5,20 @@ import { err, info, suc } from "./info";
 
 console.log('assetErrorHandler loaded')
 async function errorHandler() {
+    let PreFabName
+    let PreFabType
+    let PreFabDepend
+
+    const htmlc = document.documentElement.className
+    if(htmlc.includes('locale-zh-HANS')){
+        PreFabName = '资产名称'
+        PreFabType = '资产类型'
+        PreFabDepend = '资产依赖'
+    }else{
+        PreFabName = 'PreFab Name'
+        PreFabType = 'PreFab Type'
+        PreFabDepend = 'PreFab Depend'
+    }
     document.head.appendChild(document.createElement('style')).innerHTML = `
 
     .close-button {
@@ -88,9 +102,9 @@ async function errorHandler() {
             return [`
                 <div style="">
                     <p>PreFab Json Loading Error</p>
-                    <p>PreFab Name:<input type="text" id="copyText" value="${AssetName}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
-                    <p>PreFab Type:<input type="text" id="copyText" value="${AssetType}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
-                    <p>PreFab Depend:<input type="text" id="copyText" value="${AssetDepend.length}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
+                    <p>${PreFabName}: <input type="text" id="copyText" value="${AssetName}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
+                    <p>${PreFabType}: <input type="text" id="copyText" value="${AssetType}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
+                    <p>${PreFabDepend}:<input type="text" id="copyText" value="${AssetDepend.length}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
                     <input type="text" id="copyText" value="${AssetDepend.join('\n')}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 100%;"/>
                     <div class>
                     </button>
