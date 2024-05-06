@@ -1,7 +1,5 @@
 type infoType = 'error' | 'warning' | 'info' | 'success'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import React from 'react';
-import ReactDOM from 'react-dom';
+
 if (!document.getElementById('infoBoxContainer')) {
     let infoBoxContainer = document.createElement("div")
     infoBoxContainer.id = 'infoBoxContainer'

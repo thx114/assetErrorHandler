@@ -8,55 +8,36 @@ async function errorHandler() {
     let PreFabName
     let PreFabType
     let PreFabDepend
+    let PreFabJsonLoadingError
 
     const htmlc = document.documentElement.className
-    if(htmlc.includes('locale-zh-HANS')){
+    if (htmlc.includes('locale-zh-HANS')) {
         PreFabName = '资产名称'
         PreFabType = '资产类型'
         PreFabDepend = '资产依赖'
-    }else{
+        PreFabJsonLoadingError = '资产Json加载错误'
+    } else {
         PreFabName = 'PreFab Name'
         PreFabType = 'PreFab Type'
         PreFabDepend = 'PreFab Depend'
+        PreFabJsonLoadingError = 'PreFab Json Loading Error'
     }
-    document.head.appendChild(document.createElement('style')).innerHTML = `
+    async function afterFunc() {
+        (document.querySelector('.panel-backdrop_HbC') as any).style.display = 'none'
+        await delay(100)
+        errorHandler()
+    }
 
-    .close-button {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 10rem;
-      height: 10rem;
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      z-index: 1;
-    }
-    .close-button::before {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: 0 10rem 10rem 0;
-      border-color: transparent #000 transparent transparent;
-      top: 0;
-      right: 0;
-    }
-  `
     const errmsg = document.querySelector('.error-message_r4_')?.textContent;
     if (errmsg === 'Object reference not set to an instance of an object') {
-        //info('Handled a meaningless error.', 2000)
         rif().class('buttons_lZi.row_L6K').first.click
-        await delay(100)
-        errorHandler()
+        afterFunc()
+        return
     }
     else if (errmsg === 'Data layout mismatch; skipping past array boundary when exiting node.') {
-        //info('Handled a meaningless error.', 2000)
         rif().class('buttons_lZi.row_L6K').first.click
-        await delay(100)
-        errorHandler()
+        afterFunc()
+        return
     }
     else if (errmsg?.includes('Data dump: Json: {')) {
         info('Handled a asset error.', 1500)
@@ -77,8 +58,8 @@ async function errorHandler() {
                     const match = itemText.match(regex);
                     if (match) {
                         AssetType = match[1]
-                        .replace('Game.Prefabs.', '')
-                        .replace(', Game', '')
+                            .replace('Game.Prefabs.', '')
+                            .replace(', Game', '')
                         console.log(itemText)
                     }
                 } else if (itemText?.includes('name": "')) {
@@ -98,10 +79,9 @@ async function errorHandler() {
 
             const fullmsg = Array.from(meg.children).map(i => i.textContent).join('\n')
             AssetDepend = Array.from(new Set(AssetDepend))
-
             return [`
                 <div style="">
-                    <p>PreFab Json Loading Error</p>
+                    <p>${PreFabJsonLoadingError}</p>
                     <p>${PreFabName}: <input type="text" id="copyText" value="${AssetName}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
                     <p>${PreFabType}: <input type="text" id="copyText" value="${AssetType}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
                     <p>${PreFabDepend}:<input type="text" id="copyText" value="${AssetDepend.length}" readonly style="border: none; outline: none; background: none; font-size: inherit; cursor: pointer; width: 50%;"/></p>
@@ -110,32 +90,28 @@ async function errorHandler() {
                     </button>
                 </div>
                 `, fullmsg]
-
-            // 去掉文本头尾空格
-
-
         })()
         if (!logMsg) return;
         err(logMsg[0], -1, { close: true, copy: true })
-        await delay(200)
-        rif().class('COPYLOG').items.forEach(item => {
-            item.classList.remove('COPYLOG')
-
-        })
-
-        await delay(100)
-        //errorHandler()
+        afterFunc()
+        return
     }
     else if (errmsg?.includes('Was not in array when exiting array.')) {
-        info('Handled a meaningless error.', 2000)
+        //info('Handled a meaningless error.', 2000)
         rif().class('buttons_lZi.row_L6K').first.click
-        await delay(100)
-        errorHandler()
+        afterFunc()
+        return
+    }else{
+        (document.querySelector('.panel-backdrop_HbC') as any).style.display = 'block'
     }
+
+
 
 
 }
 export const load = () => {
+
+    (window as any).AssetErrorHandler_Rtime = 0;
     (async function AssetErrorHandler() {
         console.log('on load')
 
